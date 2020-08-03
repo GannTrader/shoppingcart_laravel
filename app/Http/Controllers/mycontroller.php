@@ -14,23 +14,21 @@ class mycontroller extends Controller
 
     public function insertCart(Request $request){
     	$id = $request->id;
-		$data= DB::table('products')->get()->toArray();
+		$data= DB::table('products')->where('id', $id)->first();
 		$newData = array();
 
-		foreach ($data as $value) {
-			$newData[$value->id] = $value;
-		}
-
 		if(!$request->session()->get('cart')) {
-			$newData[$id]->slg = 1;
+			$data->slg = 1;
+			$newData[$id] = $data;
 			$request->session()->put('cart', $newData);
 		} else {
 			$result = $request->session()->get('cart');
-			if (array_key_exists('slg', $result[$id])){
+			if (array_key_exists($id, $result)){
 				$result[$id]->slg += 1;
 				$request->session()->put('cart', $result);
 			} else {
-				$result[$id]->slg = 1;
+				$data->slg = 1;
+				$result[$id] = $data;
 				$request->session()->put('cart', $result);
 			}
 		} 
